@@ -91,7 +91,6 @@ public class UserServiceImpl implements UserService {
 		newUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
 		newUser.setEnabled(false);
 		userRep.save(newUser);
-		// ajouter à newUser le role par défaut USER
 		Role r = roleRep.findByRole("USER");
 		List<Role> roles = new ArrayList<>();
 		roles.add(r);
@@ -99,11 +98,14 @@ public class UserServiceImpl implements UserService {
 
 		userRep.save(newUser);
 
-		// génére le code secret
 		String code = this.generateCode();
 
 		VerificationToken token = new VerificationToken(code, newUser);
 		verificationTokenRepo.save(token);
+
+
+		sendEmailUser(newUser, code);
+
 
 		return newUser;
 	}
@@ -131,5 +133,7 @@ public class UserServiceImpl implements UserService {
 		userRep.save(user);
 		return user;
 	}
+
+
 
 }
